@@ -29,6 +29,7 @@ export const registerGameResults = async (req: Request, res: Response) => {
   const obj = req.body;
   const { email, password, ...outcome } = obj;
 
+      console.log("obj", obj)
 
   try {
     const payload = {
@@ -39,11 +40,6 @@ export const registerGameResults = async (req: Request, res: Response) => {
     const gatewayAccess = await nexusBackendService.post(
       `${gatewayUrl}/nexus-wager/auth/login`,
       payload,
-      {
-        headers: {
-          "sdk-api-key": sdkApiKey!,
-        },
-      },
     );
       console.log("gatewayAccess", gatewayAccess)
 
