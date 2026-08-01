@@ -77,13 +77,11 @@ export const registerGameResults = async (req: Request, res: Response) => {
               userProfile.data.data.unique_id,
           };
 
-          console.log("result", result);
-
-          // await nexusBackendService.post(`${sdkBackendUrl}/result`, result, {
-          //   headers: {
-          //     "sdk-api-key": sdkApiKey!,
-          //   },
-          // });
+          await nexusBackendService.post(`${sdkBackendUrl}/result`, result, {
+            headers: {
+              "sdk-api-key": sdkApiKey!,
+            },
+          });
 
           res.status(200).json({
             success: true,
