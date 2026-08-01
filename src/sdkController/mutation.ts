@@ -25,11 +25,10 @@ export type RESULT = {
   additionalGameData: any;
 };
 
+// .status = 200
 export const registerGameResults = async (req: Request, res: Response) => {
   const obj = req.body;
   const { email, password, ...outcome } = obj;
-
-      console.log("obj", obj)
 
   try {
     const payload = {
@@ -41,7 +40,6 @@ export const registerGameResults = async (req: Request, res: Response) => {
       `${gatewayUrl}/nexus-wager/auth/login`,
       payload,
     );
-      console.log("gatewayAccess", gatewayAccess)
 
     const loginCredentials = {
       email,
@@ -53,19 +51,17 @@ export const registerGameResults = async (req: Request, res: Response) => {
       loginCredentials,
       {
         headers: {
-          Authorization: `Bearer ${gatewayAccess.data.access_token}`,
+          Authorization: `Bearer ${gatewayAccess.data.data.access_token}`,
         },
       },
     );
-
-    console.log("userLogin", userLogin)
 
     const userProfile = await nexusBackendService.get(
       `${gatewayUrl}/users/account/me`,
       {
         headers: {
-          Authorization: `Bearer ${gatewayAccess.data.access_token}`,
-          "X-APP-TOKEN": userLogin.data.token || "",        },
+          Authorization: `Bearer ${gatewayAccess.data.data.access_token}`,
+          "X-APP-TOKEN": userLogin.data.data.token || "",        },
       },
     );
 
