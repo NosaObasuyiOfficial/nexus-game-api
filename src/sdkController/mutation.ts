@@ -47,7 +47,6 @@ export const registerGameResults = async (req: Request, res: Response) => {
     );
       console.log("gatewayAccess", gatewayAccess)
 
-
     const loginCredentials = {
       email: gatewayEmail!,
       password: gatewayPassword!,
