@@ -33,8 +33,8 @@ export const registerGameResults = async (req: Request, res: Response) => {
 
   try {
     const payload = {
-      email: email!,
-      password: password!,
+      email: gatewayEmail!,
+      password: gatewayPassword!,
     };
 
     const gatewayAccess = await nexusBackendService.post(
@@ -44,8 +44,8 @@ export const registerGameResults = async (req: Request, res: Response) => {
       console.log("gatewayAccess", gatewayAccess)
 
     const loginCredentials = {
-      email: gatewayEmail!,
-      password: gatewayPassword!,
+      email,
+      password,
     };
 
     const userLogin = await nexusBackendService.post(
@@ -54,7 +54,6 @@ export const registerGameResults = async (req: Request, res: Response) => {
       {
         headers: {
           Authorization: `Bearer ${gatewayAccess.data.access_token}`,
-          "sdk-api-key": sdkApiKey!,
         },
       },
     );
@@ -66,14 +65,14 @@ export const registerGameResults = async (req: Request, res: Response) => {
       {
         headers: {
           Authorization: `Bearer ${gatewayAccess.data.access_token}`,
-          "X-APP-TOKEN": userLogin.data.token || "",
-          "sdk-api-key": sdkApiKey!,
-        },
+          "X-APP-TOKEN": userLogin.data.token || "",        },
       },
     );
 
 
     const result = { ...outcome, developerId: userProfile.data[0].unique_id };
+
+        console.log("result", result)
 
     await nexusBackendService.post(`${sdkBackendUrl}/result`, result, {
       headers: {
