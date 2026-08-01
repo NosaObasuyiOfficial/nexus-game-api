@@ -4,7 +4,8 @@ import dotenv from "dotenv";
 import nexusBackendService from "../utils/service";
 
 dotenv.config();
-const { sdkApiKey, gatewayEmail, gatewayPassword, gatewayUrl, sdkBackendUrl } = process.env;
+const { sdkApiKey, gatewayEmail, gatewayPassword, gatewayUrl, sdkBackendUrl } =
+  process.env;
 
 type POINTS = {
   playerId: string;
@@ -61,14 +62,18 @@ export const registerGameResults = async (req: Request, res: Response) => {
       {
         headers: {
           Authorization: `Bearer ${gatewayAccess.data.data.access_token}`,
-          "X-APP-TOKEN": userLogin.data.data.token || "",        },
+          "X-APP-TOKEN": userLogin.data.data.token || "",
+        },
       },
     );
 
+    const result = {
+      ...outcome,
+      developerId:
+        userProfile.data.data[0].unique_id || userProfile.data.data.unique_id,
+    };
 
-    const result = { ...outcome, developerId: userProfile.data[0].unique_id };
-
-        console.log("result", result)
+    console.log("result", result);
 
     await nexusBackendService.post(`${sdkBackendUrl}/result`, result, {
       headers: {
