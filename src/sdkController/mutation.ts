@@ -47,44 +47,66 @@ export const registerGameResults = async (req: Request, res: Response) => {
       password,
     };
 
-    const userLogin = await nexusBackendService.post(
-      `${gatewayUrl}/users/auth/login`,
-      loginCredentials,
-      {
-        headers: {
-          Authorization: `Bearer ${gatewayAccess.data.data.access_token}`,
+    if (gatewayAccess.status === 200) {
+      const userLogin = await nexusBackendService.post(
+        `${gatewayUrl}/users/auth/login`,
+        loginCredentials,
+        {
+          headers: {
+            Authorization: `Bearer ${gatewayAccess.data.data.access_token}`,
+          },
         },
-      },
-    );
+      );
 
-    const userProfile = await nexusBackendService.get(
-      `${gatewayUrl}/users/account/me`,
-      {
-        headers: {
-          Authorization: `Bearer ${gatewayAccess.data.data.access_token}`,
-          "X-APP-TOKEN": userLogin.data.data.token || "",
-        },
-      },
-    );
+      if (userLogin.status === 200) {
+        const userProfile = await nexusBackendService.get(
+          `${gatewayUrl}/users/account/me`,
+          {
+            headers: {
+              Authorization: `Bearer ${gatewayAccess.data.data.access_token}`,
+              "X-APP-TOKEN": userLogin.data.data.token || "",
+            },
+          },
+        );
 
-    const result = {
-      ...outcome,
-      developerId:
-        userProfile.data.data[0].unique_id || userProfile.data.data.unique_id,
-    };
+        if (userProfile.status === 200) {
+          const result = {
+            ...outcome,
+            developerId:
+              userProfile.data.data[0].unique_id ||
+              userProfile.data.data.unique_id,
+          };
 
-    console.log("result", result);
+          console.log("result", result);
 
-    await nexusBackendService.post(`${sdkBackendUrl}/result`, result, {
-      headers: {
-        "sdk-api-key": sdkApiKey!,
-      },
-    });
+          // await nexusBackendService.post(`${sdkBackendUrl}/result`, result, {
+          //   headers: {
+          //     "sdk-api-key": sdkApiKey!,
+          //   },
+          // });
 
-    res.status(200).json({
-      success: true,
-      message: "Result registered!",
-    });
+          res.status(200).json({
+            success: true,
+            message: "Result registered!",
+          });
+        } else {
+          return res.status(400).json({
+            success: false,
+            message: "Failed to get user information",
+          });
+        }
+      } else {
+        return res.status(400).json({
+          success: false,
+          message: "Failed to authenticate user",
+        });
+      }
+    } else {
+      return res.status(400).json({
+        success: false,
+        message: "Failed to access nexus gateway",
+      });
+    }
   } catch (error) {
     return res.status(500).json({
       success: false,
